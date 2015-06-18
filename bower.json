@@ -1,0 +1,19 @@
+{
+  "name": "socital",
+  "version": "0.0.0",
+  "homepage": "https://github.com/johnbarlas39/social-profile",
+  "authors": [
+    "barlas <johnbarlas39@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.1"
+  }
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Socital</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="index.css">
+</head>
+
+<body ng-app='app'>
+
+<!-- <div ng-controller='MainController as main'>
+	{{ main.something }}
+</div> -->
+
+<div class='container'>
+	<div class='row' id='page-header'>
+		<div class='col-md-12'>
+			<div id='profile-photo-container'></div>
+		</div>	
+	</div>
+
+	<div class='row' id='info'>
+		<div class='col-md-5' id='basic-info'>
+			<span>Name: </span><br/>
+			<span>Email: </span><br/>
+			<span>Phone number: </span><br/>
+		</div>
+		<div class='col-md-7'>
+			<h2>Socializer</h2>
+			<p>
+				You are the hub of social scenes and people count on you to find out what’s happening. You are quick to connect people and readily share your social savvy. Your followers appreciate your network and generosity.
+			</p>
+		</div>
+	</div>
+
+	<tabset id="data-container">
+		<tab heading='Demographic Details'>
+		  <span>Location: </span><br/>
+		  <span>Nationality: </span><br/>
+		  <span>Previous Locations: </span><br/>
+		  <span>Age: </span><br/>
+		  <span>Sex: </span><br/>
+		  <span>Relationship / Marital Status: </span><br/>
+		  <span>Education Level: </span><br/>
+		  <span>Employment status: </span><br/>
+		  <span>Job Title: </span><br/>
+		</tab>
+
+		<tab heading='Interest Graphs'>
+			<p>
+				Level of interest for each category.
+				Click on category to delve deeper.
+			</p>
+
+			<barchart></barchart>
+
+			<ul class='categories'>
+				<li><a href="">Shopping</a></li>
+				<li><a href="">Wellness & Health</a></li>
+				<li><a href="">Food & Beverage</a></li>
+				<li><a href="">Lifestyle</a></li>
+				<li><a href="">Media & Entertainment</a></li>
+				<li><a href="">Technology</a></li>
+				<li><a href="">Education</a></li>
+			</ul>
+		</tab>
+	</tabset>
+
+	<!-- <div class='row'>
+        <div class='panel-group' id='accordion'>
+            
+            <div class='panel panel-default'>
+                <div class='panel-heading'>
+                    <h4 class='panel-title'>
+                        <a data-toggle='collapse' data-parent='#accordion' href='#section-one'>First Section</a>
+                    </h4>
+                </div>
+
+                <div id='section-one' class='panel-collapse collapse in'>
+                    <div class='panel-body'>
+                        In dang ligula fo shizzle hizzle. Proin dawg. We gonna chung tempizzle. Fizzle izzle mi a shizn imperdizzle vehicula. Hizzle pot ipsizzle. Fo shizzle for sure est id yo. Praesent dope ipsum brizzle urna ullamcorpizzle. Mammasay mammasa mamma oo sa nec risus. Vivamus lobortis sizzle bling bling felizzle. Izzle egizzle dawg. Etiam black dui tellivizzle magna elementizzle lobortizzle. Stuff placerizzle, arcu nizzle mofo bling bling, nisl pimpin' its fo rizzle nunc, cursus fo shizzle my nizzle dawg pot sizzle amizzle est. That's the shizzle get down get down. Vestibulizzle daahng dawg ipsizzle primis in gangster orci luctizzle gangster black posuere cubilia Fo shizzle mah nizzle fo rizzle, mah home g-dizzle; Vestibulum funky fresh, justo laorizzle sizzle yippiyo, fo lorizzle gravida nunc, a fermentum urna metus quis nibh. Own yo' pretizzle erizzle at nulla. Phasellizzle you son of a bizzle. Cizzle for sure natoque penatibus et crazy shizzle my nizzle crocodizzle black uhuh ... yih!, its fo rizzle ridiculizzle black. Prizzle et massa fringilla quizzle gangsta congue. Shit non mi.
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class='panel panel-default'>
+                <div class='panel-heading'>
+                    <h4 class='panel-title'>
+                        <a data-toggle='collapse' data-parent='#accordion' href='#section-two'>Second Section</a>
+                    </h4>
+                </div>
+                
+                <div id='section-two' class='panel-collapse collapse'>
+                    <div class='panel-body'>
+                        In dang ligula fo shizzle hizzle. Proin dawg. We gonna chung tempizzle. Fizzle izzle mi a shizn imperdizzle vehicula. Hizzle pot ipsizzle. Fo shizzle for sure est id yo. Praesent dope ipsum brizzle urna ullamcorpizzle. Mammasay mammasa mamma oo sa nec risus. Vivamus lobortis sizzle bling bling felizzle. Izzle egizzle dawg. Etiam black dui tellivizzle magna elementizzle lobortizzle. Stuff placerizzle, arcu nizzle mofo bling bling, nisl pimpin' its fo rizzle nunc, cursus fo shizzle my nizzle dawg pot sizzle amizzle est. That's the shizzle get down get down. Vestibulizzle daahng dawg ipsizzle primis in gangster orci luctizzle gangster black posuere cubilia Fo shizzle mah nizzle fo rizzle, mah home g-dizzle; Vestibulum funky fresh, justo laorizzle sizzle yippiyo, fo lorizzle gravida nunc, a fermentum urna metus quis nibh. Own yo' pretizzle erizzle at nulla. Phasellizzle you son of a bizzle. Cizzle for sure natoque penatibus et crazy shizzle my nizzle crocodizzle black uhuh ... yih!, its fo rizzle ridiculizzle black. Prizzle et massa fringilla quizzle gangsta congue. Shit non mi.
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div> -->
+</div>
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>
+<script src="app-front.js"></script>
+
+</body>
+
+</html>

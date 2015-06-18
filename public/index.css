@@ -1,0 +1,51 @@
+.row {
+	border: 1px solid black;
+	border-radius: 5px;
+}
+
+.row div {
+	border: 1px solid black;
+	border-radius: 5px;
+}
+
+#page-header {
+	height: 200px;
+	background-color: blue;
+}
+
+#profile-photo-container {
+	margin: 0 auto;
+	margin-top: 80px;
+	height: 150px;
+	width: 150px;
+	border: 2px solid gray;
+	border-radius: 50%;
+	background-repeat: no-repeat;
+    background-position: 50%;
+	background-image: url('img/photo.jpg');
+	background-size: auto 100%;
+}
+
+#info {
+	height: 200px;
+	background-color: gray;
+}
+
+#basic-info {
+
+}
+
+.my-tab {
+	padding-top: 20px;
+	text-align: center;
+}
+
+.my-tab li {
+	display: inline;
+	font-size: 16px;	
+}
+
+.chart rect {
+	margin: 5px;
+	padding: 5px;
+}
