@@ -1,3 +1,10 @@
+
+body {
+	/*background-image: url('img/grunge.jpg');
+	background-repeat: repeat;*/
+	background-color: #C9E1C1;
+}
+
 .row {
 	border: 1px solid black;
 	border-radius: 5px;
@@ -10,7 +17,7 @@
 
 #page-header {
 	height: 200px;
-	background-color: blue;
+	background-color: #152737;
 }
 
 #profile-photo-container {
@@ -28,7 +35,7 @@
 
 #info {
 	height: 200px;
-	background-color: gray;
+	background-color: #0F9FB4;
 }
 
 #basic-info {
@@ -49,3 +56,4 @@
 	margin: 5px;
 	padding: 5px;
 }
+

@@ -1,0 +1,61 @@
+<div class='container' ng-controller="MainController as main">
+	<div class='row' id='page-header'>
+		<div class='col-md-12'>
+			<div id='profile-photo-container'></div>
+		</div>	
+	</div>
+
+	<div class='row' id='info'>
+		<div class='col-md-5' id='basic-info'>
+			<span>Name: {{ main.data.firstName + " " + main.data.lastName }}</span><br/>
+			<span>Email: {{ main.data.email }} </span><br/>
+			<span>Phone number: {{ main.data.phone }}</span><br/>
+		</div>
+		<div class='col-md-7'>
+			<h2>Socializer</h2>
+			<p>
+				You are the hub of social scenes and people count on you to find out what’s happening. You are quick to connect people and readily share your social savvy. Your followers appreciate your network and generosity.
+			</p>
+		</div>
+	</div>
+
+	<tabset id="data-container">
+		<tab heading='Demographic Details'>
+			<span>Location: {{ main.data.location }}</span><br/>
+		 	<span>Nationality: {{ main.data.nationality }}</span><br/>
+			<span>
+				Previous Locations: 
+				<span ng-repeat="place in main.data.previousLocations">
+					{{ place }} 
+					<span ng-if="!$last">{{","}}</span>
+					<span ng-if="$last">.</span>
+				</span> 
+			</span><br/>
+			<span>Age: {{ main.data.age }} </span><br/>
+			<span>Sex: {{ main.data.sex }} </span><br/>
+			<span>Relationship / Marital Status: {{ main.data.maritalStatus }} </span><br/>
+			<span>Education Level: {{ main.data.education }} </span><br/>
+			<span>Employment status: {{ main.data.employmentStatus }} </span><br/>
+			<span>Job Title: {{ main.data.job }} </span><br/>
+		</tab>
+
+		<tab heading='Interest Graphs'>
+			<div id='vis'>
+				<p>
+					Level of interest for each category.
+					Click on category to delve deeper.
+
+					<br/>
+					{{main.barData}} <br/>
+					{{ main.subCategories }} <br/>
+					{{main.brands}} <br/>
+				</p>
+
+				<div barchart data='main.barData'></div>
+				<div piechart class='ng-hide' data='main.subCategories' id='pie'></div>
+				<div brandchart class='ng-hide' data='main.brands' id='brands'></div>
+			</div>
+		</tab>
+	</tabset>
+
+</div>
