@@ -1,6 +1,6 @@
 (function () {
 
-	var app = angular.module('app', ['ngRoute','ngAnimate']);
+	var app = angular.module('app', ['ngRoute','ngAnimate', 'ui.bootstrap']);
 
 	app.config( function($routeProvider) {
 		$routeProvider
@@ -41,10 +41,24 @@
 
 	app.controller('MainController', function($scope, $compile, userDataService) {
 		var self = this;
+		self.basicIsOpen = false;
+		self.analysisIsOpen = false;
+		self.demographicsIsOpen = false;
+		self.visualisationIsOpen = false;
 
 		self.subCategories = [];
 		self.brands = [];
 		self.currentCategory = '';
+
+		self.barData = [];
+
+		self.showViz = function() {
+			// console.log(angular.element( document.querySelector('#bar') ).hasClass('ng-hide'));
+			if (angular.element( document.querySelector('#bar') ).hasClass('ng-hide')) {
+				angular.element( document.querySelector('#bar') ).removeClass('ng-hide');
+				self.barData = getCategories();
+			}
+		};
 
 		function getCategories() {
 			var barData = [];
@@ -94,7 +108,7 @@
 
 		userDataService.then(function (data) {
 			self.data = data;
-			self.barData = getCategories();
+			// self.barData = getCategories();
 			// console.log(self.data.data[0].topBrands);
 			// self.brands = getBrands(null);
 			// console.log(self.brands);
@@ -139,57 +153,6 @@
 	});
 
 
-	app.directive('tab', function() {
-		return {
-			restrict: 'E',
-			transclude: true,
-			scope: {
-				heading: '@'
-			},
-			require: '^tabset',
-			template: '<div ng-show="active" ng-transclude></div>',
-
-			link: function (scope, element, attrs, tabsetCtrl) {
-				scope.active = false;
-				tabsetCtrl.addTab(scope);
-			}
-		};
-	});
-
-	app.directive('tabset', function() {
-		return {
-			restrict: 'E',
-			transclude: true,
-			scope: {},
-			
-			templateUrl: 'html/tabset.html',
-			bindToController: true,
-			controllerAs: 'tabset',
-
-			controller: function() {
-				var self = this;
-				self.tabs = [];
-
-				self.addTab = function(tab) {
-					self.tabs.push(tab);
-
-					// if (self.tabs.length === 1) {
-					// 	tab.active = true;
-					// }
-				};
-
-				self.select = function(selectedTab) {
-					angular.forEach(self.tabs, function(tab) {
-						if (tab.active && tab !== selectedTab) {
-							tab.active = false;
-						}	
-					});
-
-					selectedTab.active = true;
-				};
-			}
-		};
-	});
 
 	// do I still need $compile?
 	app.directive('barchart', function($compile) {
@@ -211,18 +174,29 @@
 
 					// Show subcategory pie chart
 					controller.setPieData(category);
-					var elem1 = angular.element( document.querySelector('#pie') )[0];
-					$(elem1).removeClass('ng-hide');
+					// var elem1 = angular.element( document.querySelector('#pie') )[0];
+					// $(elem1).removeClass('ng-hide');
+					var elem1 = angular.element( document.querySelector('#pie-container') );
+					elem1.removeClass('ng-hide');
 
-					var elem2 = angular.element( document.querySelector('#brands') )[0];
-					$(elem2).removeClass('ng-hide');
+					// var elem2 = angular.element( document.querySelector('#brands') )[0];
+					// $(elem2).removeClass('ng-hide');
+					var elem2 = angular.element( document.querySelector('#brand-container') );
+					elem2.removeClass('ng-hide');
+
+					// var elem2 = angular.element( document.querySelector('#brands') );
+					// elem2.removeClass('ng-hide');
 				}
+
+				var width = 900;
+				var left_width = width / 2;
+				// console.log(angular.element( document.querySelector('#bar') )[0].clientWidth);
 
 				var svg = d3.select(element[0])
 							.append("svg")
 							.attr('class', 'chart')
 							.attr("height", 300)
-							.attr("width", 600)
+							.attr("width", '100%')
 							;
 
 				scope.render = function(data) {
@@ -242,17 +216,31 @@
 					.enter()
 					.append('rect')
 					.on('click', function(d) { clickCategory(d[0]); })
+					.on("mouseover", function() {
+						d3.select(this)
+							.transition()
+							.duration(150)
+							.style({"fill": "#152737"});
+					})
+					.on("mouseout", function() {
+						d3.select(this)
+							.transition()
+							.duration(150)
+							.style({"fill": "#0F9FB4"});
+					})
 					.attr("height", "35")
 					.attr("width", 0)
-					.attr("x", 180)
+					.attr("x", '44%')
 					.attr("y", function(d,i) {return i* (35+4);})
 					.style({
-						"fill": "orange"
+						"fill": "#0F9FB4"
 					})
+					
 					.transition()
-					.duration(3000)
-					.delay(1000)
+					.duration(1200)
+					.delay(120)
 					.attr("width", function(d) {return d[1]*3;})
+
 					;
 
 					svg.selectAll('text')
@@ -260,14 +248,15 @@
 					// text
 					.enter()
 					.append('text')
+					// .attr('class', 'bar-text')
 					.text( function(d) { return d[0]; })
 					.attr({
-						x: 10,
+						x: "42%",
 						y: function(d,i) { return (i * (35+4)) + 25 ; } ,
-						"font-family": "Helvetica",
+						"font-family": "Roboto Slab",
 						"font-size": "16px",
 						'fill': 'black',
-						'text-anchor': 'left'
+						'text-anchor': 'end'
 					})
 					;
 				
@@ -295,17 +284,57 @@
 				// var dataset = scope.data;
 				// console.log(dataset);
 
-
 				var pie = d3.layout.pie().value(function(d) { return d[1]; });
 
+				var radius = 130;
+
 				var arc = d3.svg.arc()
-					.innerRadius(0)
-					.outerRadius(100);
+					.innerRadius(radius - 100)
+					.outerRadius(radius);
+
+				var arcLarge = d3.svg.arc()
+				  .innerRadius(radius-100)
+				  .outerRadius(radius + 20);
+
+				var toggleArc = function(p){
+					// return function() {
+					// 	p.state = !p.state;
+					//     var dest = p.state ? arcLarge : arc;
+
+					//     d3.select(this).select("path").transition()
+					//       .duration(500)
+					//       .attr("d", dest)
+					//       ;
+					// };
+
+					p.state = !p.state;
+					    var dest = p.state ? arcLarge : arc;
+
+					    d3.select(this).select("path").transition()
+					      .duration(500)
+					      .attr("d", dest)
+					      ;
+
+
+				    // d3.select('#tooltip').text(p.data[0]);
+
+				    // d3.select("#tooltip")
+				    //     .style("left", d3.event.pageX + "px")
+				    //     .style("top", d3.event.pageY + "px")
+				    //     .style("opacity", 1)
+				    //     .select("#value")
+				    //     .text(d.data[0]);
+				};
+
+				var width = 300, height = 500;
 
 				var svg = d3.select(element[0])
 					.append("svg")
-					.attr("width", 600)
-					.attr("height", 300);
+					.attr("width", "100%")
+					.attr("height", 400)
+					.attr('viewBox','0 0 ' + Math.min(width,height) + ' ' + Math.min(width,height))
+    				.attr('preserveAspectRatio','xMinYMin')
+    				;
 				
 
 				scope.render = function(data) {
@@ -316,30 +345,107 @@
 
 					svg.selectAll('path').data(pie(data)).remove();
 
+					// function arcTween(a) {
+					// 	var i = d3.interpolate(this._current, a);
+					// 	// console.log('yes');
+					// 	this._current = i(0);
+					// 	return function(t) {
+					// 		return arc(i(t));
+					// 	};
+					// }
+
+					// var tweenPie = function (b) {
+					// 	// console.log(b);
+			  //         b.innerRadius = 0;
+			  //         var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
+			  //         return function(t) {
+			  //           return arc(i(t));
+			  //         };
+			  //       };
+
 					var arcs = svg.selectAll("g.arc")
 						.data(pie(data))
 						.enter()
 						.append("g")
 						.attr("class", "arc")
-						.attr("transform", "translate(" + 100 + ", " + 100 + ")")
+						.attr("transform", "translate(" + 200 + ", " + 150 + ")")
 						.on('click', function(d) {
 							controller.setBrands(d.data[0]);
-						});
+						})
+						// .on("mouseover", toggleArc)
+						.on("mouseover", function(d) {
+							d.state = !d.state;
+						    var dest = d.state ? arcLarge : arc;
+
+						    d3.select(this).select("path").transition()
+						      .duration(500)
+						      .attr("d", dest)
+						      ;
+							// toggleArc();
+							d3.select('#tooltip')
+							.style({"visibility": "visible"})
+							.text(d.data[0]);
+						})
+						.on("mouseout", function(d) {
+							d.state = !d.state;
+						    var dest = d.state ? arcLarge : arc;
+
+						    d3.select(this).select("path").transition()
+						      .duration(500)
+						      .attr("d", dest)
+						      ;
+
+						     // d3.select('#tooltip').attr("visibility");
+						})
+						;
 
 					var color = d3.scale.category10();
+					// var arcOver = d3.layout.arc().outerRadius(r + 10);
 
 					arcs.append("path")
-						.attr("fill", function(d, i) { return color(i); })
-						.attr("d", arc);
+						// .on("mouseover", function() {
+						// 	console.log('over');
+						// 	// d3.select(this).attr("fill", "red");
+						// 	d3.select(this).attr("d", arcOver);
+						// })
 
-					arcs.append("text")
-						.attr("transform", function(d) {
-							return "translate(" + arc.centroid(d) + ")";
-						})
-						.attr("text-anchor", "middle")
-						.text(function(d) {
-							return d.data[0];
-						});
+						// .each(function(d) { this._current = d; })
+						.transition()
+						// .delay()
+						.duration(1000)
+						// .attrTween("d", arcTween)
+
+						.attr("fill", function(d, i) { return color(i); })
+						.attr("d", arc)
+						
+						
+						// .ease("bounce")
+						// .delay(function(d,i) { return i*500; })
+						// .delay(500)
+						
+
+						
+						;
+
+					// var getAngle = function (d) {
+					//     return (180 / Math.PI * (d.startAngle + d.endAngle) / 2 - 90);
+					// };
+
+					// arcs.append("text")
+					// 	.attr("transform", function(d) {
+					// 		// d.outerRadius = 320; // Set Outer Coordinate
+					//   //       d.innerRadius = 315; // Set Inner Coordinate
+					// 		return "translate(" + arc.centroid(d) + ")" + "rotate(" + getAngle(d) + ")";
+					// 	})
+					// 	// .attr("dy", 5)
+					// 	.attr({
+					// 		"text-anchor": "middle",
+					// 		"font-family": "Roboto-Slab",
+					// 		"fill": "white"
+					// 	})
+					// 	.text(function(d) {
+					// 		return d.data[0];
+					// 	});
 				};
 
 				scope.$watch('data', function(){
