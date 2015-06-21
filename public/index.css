@@ -29,6 +29,15 @@ body {
 	background-color: #152737;
 }
 
+#main-name {
+	font-style: italic;
+	font-size: 33px;
+	font-weight: bold;
+	color: white;
+	margin-top: 120px;
+	text-align: right;
+}
+
 #profile-photo-container {
 	margin: 0 auto;
 	margin-top: 80px;
@@ -170,6 +179,8 @@ body {
 #brand-container p {
 	text-align: center;
 	font-size: 16px;
+	padding-top: 10px;
+	padding-bottom: 50px;
 }
 
 #separator {
@@ -180,3 +191,55 @@ body {
 	margin-top: 20px;
 	margin-bottom: 40px;
 }
+
+#sub-header {
+	text-align: center;
+	font-size: 26px;
+	font-weight: bold;
+	text-decoration: underline;
+	padding-bottom: 35px;
+}
+
+#vis p {
+	font-size: 20px;
+	text-align: center;
+	padding-bottom: 40px;
+}
+
+.demographics-header {
+	text-align: center;
+	font-size: 22px;
+	font-weight: bold;
+	padding-bottom: 30px;
+}
+
+.data-key {
+	text-align: right;
+}
+
+.data-value {
+	text-align: left;
+}
+
+#basic-description {
+	margin-top: 15px;
+	padding-left: 15px;
+	font-size: 18px;
+}
+
+#analysis-title {
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+}
+
+#analysis-text {
+	padding-left: 20px;
+	padding-right: 20px;
+	text-align: center;
+}
+
+.panel-group {
+	padding-top: 40px;
+}
+

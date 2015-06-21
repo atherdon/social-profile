@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/johnbarlas39/social-profile#readme",
   "dependencies": {
-    "bower": "^1.4.1",
     "express": "^4.12.4"
   }
 }

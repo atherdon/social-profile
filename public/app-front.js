@@ -1,7 +1,8 @@
 (function () {
 
-	var app = angular.module('app', ['ngRoute','ngAnimate', 'ui.bootstrap']);
+	var app = angular.module('app', ['ngRoute', 'ui.bootstrap']);
 
+	// router
 	app.config( function($routeProvider) {
 		$routeProvider
 			.when('/',
@@ -28,6 +29,7 @@
 			;
 	});
 
+	// service that gets the data from the server
 	app.service('userDataService', function($http, $q) {
 		var defferer = $q.defer();
 
@@ -39,27 +41,35 @@
 		return defferer.promise ;
 	});
 
-	app.controller('MainController', function($scope, $compile, userDataService) {
+	// app's controller
+	app.controller('MainController', function($scope, userDataService) {
 		var self = this;
-		self.basicIsOpen = false;
-		self.analysisIsOpen = false;
-		self.demographicsIsOpen = false;
-		self.visualisationIsOpen = false;
 
+		// accordion open toggle
+		self.basicIsOpen = true;
+		self.analysisIsOpen = true;
+
+		// initialize some values
 		self.subCategories = [];
 		self.brands = [];
 		self.currentCategory = '';
-
 		self.barData = [];
 
+		// promise has returned the data
+		userDataService.then(function (data) {
+			self.data = data;
+		});
+
+		// show visualization tab pane
 		self.showViz = function() {
-			// console.log(angular.element( document.querySelector('#bar') ).hasClass('ng-hide'));
+			// only show if it hasn't been shown already
 			if (angular.element( document.querySelector('#bar') ).hasClass('ng-hide')) {
 				angular.element( document.querySelector('#bar') ).removeClass('ng-hide');
 				self.barData = getCategories();
 			}
 		};
 
+		// gets and returns main categories
 		function getCategories() {
 			var barData = [];
 			var catg = self.data.data;
@@ -69,87 +79,50 @@
 			return barData;
 		}
 
+		// populates pie chart data
+		self.setPieData = function(category) {
+			self.subCategories = getSubCategories(category);
+			$scope.$apply();
+		};
+
+		// gets and returns pie chart data
 		function getSubCategories(category) {
-			// console.log('yeah again');
 			var pieData = [];
 			var currentObject = self.data.data.filter(function(obj) {return obj.category === category;})[0];
-			// console.log(currentObject);
 			var subs = currentObject.subCategories;
-			// console.log(currentObject[0].subCategories);
 
 			for (var i=0 ; i<subs.length ; i++) {
 				pieData.push([subs[i].name, subs[i].importance]);
 			}
-			// console.log('pieData ' + pieData);
+
 			return pieData;
 		}
 
-		function getBrands(category) {
-			// if (category === null) {
-			// 	return [];
-			// }
-			console.log(category);
-			var currentObject = self.data.data.filter(function(obj) { return obj.category === category ;})[0];
-			console.log(currentObject);
-			return currentObject.topBrands;
-			// var arr = self.data.data[0].topBrands;
-			// return arr;
-		}
-
-		function getSubBrands(sub) {
-			// console.log(self.currentCategory);
-			var currentParent = self.data.data.filter(function(obj) { return obj.category===self.currentCategory; })[0];
-			// console.log(currentParent);
-			var currentObject = currentParent.subCategories.filter(function(obj) { return obj.name===sub; })[0];
-			// console.log(currentObject.name);
-			// console.log(currentParent[0].subCategories);
-			return currentObject.topBrands;
-		}
-
-		userDataService.then(function (data) {
-			self.data = data;
-			// self.barData = getCategories();
-			// console.log(self.data.data[0].topBrands);
-			// self.brands = getBrands(null);
-			// console.log(self.brands);
-		});
-
+		// top brands for a category
 		self.setTopLevelBrands = function(category) {
 			self.brands = getBrands(category);
-			// console.log(self.brands);
 			$scope.$apply();
 		};
 
+		// gets and returns the top brands for a category
+		function getBrands(category) {
+			var currentObject = self.data.data.filter(function(obj) { return obj.category === category ;})[0];
+			return currentObject.topBrands;
+		}
+
+		// top brands for a subcategory (when the pie chart has been clicked)
 		self.setBrands = function(sub) {
 			self.brands = getSubBrands(sub);
 			$scope.$apply();
 		};
 
-		self.setPieData = function(category) {
-			// console.log('yeah');
-			self.subCategories = getSubCategories(category);
-			// console.log(self.subCategories);
-			$scope.$apply();
-		};
+		// get top brands for subcategory
+		function getSubBrands(sub) {
+			var currentParent = self.data.data.filter(function(obj) { return obj.category===self.currentCategory; })[0];
+			var currentObject = currentParent.subCategories.filter(function(obj) { return obj.name===sub; })[0];
+			return currentObject.topBrands;
+		}
 
-		self.addPie = function(category) {
-			self.setPieData(category);
-			// console.log(self.subCategories);
-			var elem = angular.element( document.querySelector('#vis') );
-			// console.log(elem);
-			var newDiv = $compile( '<div piechart   data="main.subCategories" >	</div>')( $scope );
-			// var newDiv2 = $compile( '<div brandchart data="main.brands"></div>' )( $scope );
-			// elem.append('<div piechart data="main.subCategories"></div>');
-			elem.append(newDiv);
-			// elem.append(newDiv2);
-		};
-
-		self.addBrandBar = function(category) {
-			// self.setPieData(category);
-			var elem = angular.element( document.querySelector('#vis') );
-			var newDiv = $compile( '<div brandchart data="main.brands"></div>' )( $scope );
-			elem.append(newDiv);
-		};
 	});
 
 
@@ -475,7 +448,7 @@
 							.append("svg")
 							// .attr('class', 'chart')
 							.attr("height", 300)
-							.attr("width", 600)
+							.attr("width", "100%")
 							;
 
 				scope.render = function(data) {
@@ -492,14 +465,14 @@
 						.on('click', function(d) { clickCategory(d[0]); })
 						.attr("height", "35")
 						.attr("width", 0)
-						.attr("x", 180)
+						.attr("x", "30%")
 						.attr("y", function(d,i) {return i* (35+4);})
 						.style({
-							"fill": "orange"
+							"fill": "#0B717F"
 						})
 						.transition()
-						.duration(3000)
-						.delay(1000)
+						.duration(1200)
+						.delay(120)
 						.attr("width", function(d) {return d[1]*3;})
 						;
 
@@ -510,18 +483,17 @@
 						.append('text')
 						.text( function(d) { return d[0]; })
 						.attr({
-							x: 10,
+							x: "27%",
 							y: function(d,i) { return (i * (35+4)) + 25 ; } ,
-							"font-family": "Helvetica",
+							"font-family": "Roboto Slab",
 							"font-size": "16px",
 							'fill': 'black',
-							'text-anchor': 'left'
+							'text-anchor': 'end'
 						})
 						;
 				};
 
 				scope.$watch('data', function(){
-					// console.log('new!');
 		        	scope.render(scope.data);
 		        }, true);
 			}

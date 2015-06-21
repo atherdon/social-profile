@@ -9,11 +9,11 @@ var data =
 			location: "London",
 			previousLocations: [ "Athens", "Berlin", "Paris" ],
 			age: 40,
-			sex: "male",
+			sex: "Male",
 			maritalStatus: "Single",
 			education: "PhD",
 			job: "Social media expert",
-			employmentStatus: "employed",
+			employmentStatus: "Employed",
 			profile: {
 				title: "Socializer",
 				description: "You are the hub of social scenes and people count on you to find out what’s happening. You are quick to connect people and readily share your social savvy. Your followers appreciate your network and generosity."
