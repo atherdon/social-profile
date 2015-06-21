@@ -125,10 +125,8 @@
 
 	});
 
-
-
-	// do I still need $compile?
-	app.directive('barchart', function($compile) {
+	// initial barchart directive
+	app.directive('barchart', function() {
 		return {
 			scope: {
 				data: '='
