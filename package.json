@@ -19,5 +19,8 @@
   "homepage": "https://github.com/johnbarlas39/social-profile#readme",
   "dependencies": {
     "express": "^4.12.4"
+  },
+  "engines": {
+    "node": "0.12.x"
   }
 }
