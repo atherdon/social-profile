@@ -20,6 +20,7 @@ app.get('/api/users/john', function(req,res) {
 });
 
 // start server
-app.listen(3000, function() {
+var port = process.env.PORT || 3000;
+app.listen(port, function() {
 	console.log('Server started');
 });
