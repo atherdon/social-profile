@@ -122,10 +122,10 @@
 			var currentObject = currentParent.subCategories.filter(function(obj) { return obj.name===sub; })[0];
 			return currentObject.topBrands;
 		}
-
 	});
 
-	// initial barchart directive
+	// three directives written to encapsulate d3
+
 	app.directive('barchart', function() {
 		return {
 			scope: {
@@ -134,35 +134,28 @@
 			require:"^ngController",
 			link: function(scope, element, attrs, controller) {
 
+				// sort by the second element in an array
 				function sortFunction(a, b) {
 				    if (a[1] === b[1]) { return 0; }
 				    else { return (a[1] < b[1]) ? -1 : 1; }
 				}
 
+				// what happens when a bar of the chart is clicked
 				function clickCategory(category) {
 					controller.currentCategory = category;
 					controller.setTopLevelBrands(category);
-
-					// Show subcategory pie chart
 					controller.setPieData(category);
-					// var elem1 = angular.element( document.querySelector('#pie') )[0];
-					// $(elem1).removeClass('ng-hide');
+
 					var elem1 = angular.element( document.querySelector('#pie-container') );
 					elem1.removeClass('ng-hide');
 
-					// var elem2 = angular.element( document.querySelector('#brands') )[0];
-					// $(elem2).removeClass('ng-hide');
 					var elem2 = angular.element( document.querySelector('#brand-container') );
 					elem2.removeClass('ng-hide');
-
-					// var elem2 = angular.element( document.querySelector('#brands') );
-					// elem2.removeClass('ng-hide');
 				}
 
 				var width = 900;
-				var left_width = width / 2;
-				// console.log(angular.element( document.querySelector('#bar') )[0].clientWidth);
 
+				// create svg area
 				var svg = d3.select(element[0])
 							.append("svg")
 							.attr('class', 'chart')
@@ -170,72 +163,60 @@
 							.attr("width", '100%')
 							;
 
+				// draw the data
 				scope.render = function(data) {
-					// var currentData = data.sort(sortFunction).reverse();
-					// data = data.sort(sortFunction).reverse();
-
 					svg.selectAll('rect').remove();
 					svg.selectAll('text').remove();
-					// var rect = svg.selectAll('rect').data(data);
-					// var text = svg.selectAll('text').data(data);
-					// rect.exit().remove();
-					// text.exit().remove();
 
 					svg.selectAll('rect')
-					.data(data.sort(sortFunction).reverse())
-					// rect
-					.enter()
-					.append('rect')
-					.on('click', function(d) { clickCategory(d[0]); })
-					.on("mouseover", function() {
-						d3.select(this)
-							.transition()
-							.duration(150)
-							.style({"fill": "#152737"});
-					})
-					.on("mouseout", function() {
-						d3.select(this)
-							.transition()
-							.duration(150)
-							.style({"fill": "#0F9FB4"});
-					})
-					.attr("height", "35")
-					.attr("width", 0)
-					.attr("x", '44%')
-					.attr("y", function(d,i) {return i* (35+4);})
-					.style({
-						"fill": "#0F9FB4"
-					})
-					
-					.transition()
-					.duration(1200)
-					.delay(120)
-					.attr("width", function(d) {return d[1]*3;})
-
-					;
+						.data(data.sort(sortFunction).reverse())
+						.enter()
+						.append('rect')
+						.on('click', function(d) { clickCategory(d[0]); })
+						.on("mouseover", function() {
+							d3.select(this)
+								.transition()
+								.duration(150)
+								.style({"fill": "#152737"});
+						})
+						.on("mouseout", function() {
+							d3.select(this)
+								.transition()
+								.duration(150)
+								.style({"fill": "#0F9FB4"});
+						})
+						.attr("height", "35")
+						.attr("width", 0)
+						.attr("x", '44%')
+						.attr("y", function(d,i) {return i* (35+4);})
+						.style({
+							"fill": "#0F9FB4"
+						})
+						.transition()
+						.duration(1200)
+						.delay(120)
+						.attr("width", function(d) {return d[1]*3;})
+						;
 
 					svg.selectAll('text')
-					.data(data)
-					// text
-					.enter()
-					.append('text')
-					// .attr('class', 'bar-text')
-					.text( function(d) { return d[0]; })
-					.attr({
-						x: "42%",
-						y: function(d,i) { return (i * (35+4)) + 25 ; } ,
-						"font-family": "Roboto Slab",
-						"font-size": "16px",
-						'fill': 'black',
-						'text-anchor': 'end'
-					})
-					;
+						.data(data)
+						.enter()
+						.append('text')
+						.text( function(d) { return d[0]; })
+						.attr({
+							x: "42%",
+							y: function(d,i) { return (i * (35+4)) + 25 ; } ,
+							"font-family": "Roboto Slab",
+							"font-size": "16px",
+							'fill': 'black',
+							'text-anchor': 'end'
+						})
+						;
 				
 				};
 
+				// redraw data on change
 				scope.$watch('data', function(){
-					// console.log('data has changed!');
-					// var data = scope.data.sort(sortFunction).reverse();
 		        	scope.render(scope.data);
 		        }, true);
 			}
@@ -249,55 +230,20 @@
 			},
 			require:"^ngController",
 			link: function (scope, element, attrs, controller) {
-
-				// console.log(scope);
-
-				// var dataset = scope.data;
-				// console.log(dataset);
-
 				var pie = d3.layout.pie().value(function(d) { return d[1]; });
-
 				var radius = 130;
 
+				// set normal and expanded arc sizes
 				var arc = d3.svg.arc()
-					.innerRadius(radius - 100)
-					.outerRadius(radius);
+							.innerRadius(radius - 100)
+							.outerRadius(radius);
 
 				var arcLarge = d3.svg.arc()
-				  .innerRadius(radius-100)
-				  .outerRadius(radius + 20);
+								  .innerRadius(radius-100)
+								  .outerRadius(radius + 20);
 
-				var toggleArc = function(p){
-					// return function() {
-					// 	p.state = !p.state;
-					//     var dest = p.state ? arcLarge : arc;
-
-					//     d3.select(this).select("path").transition()
-					//       .duration(500)
-					//       .attr("d", dest)
-					//       ;
-					// };
-
-					p.state = !p.state;
-					    var dest = p.state ? arcLarge : arc;
-
-					    d3.select(this).select("path").transition()
-					      .duration(500)
-					      .attr("d", dest)
-					      ;
-
-
-				    // d3.select('#tooltip').text(p.data[0]);
-
-				    // d3.select("#tooltip")
-				    //     .style("left", d3.event.pageX + "px")
-				    //     .style("top", d3.event.pageY + "px")
-				    //     .style("opacity", 1)
-				    //     .select("#value")
-				    //     .text(d.data[0]);
-				};
-
-				var width = 300, height = 500;
+				var width  = 300,
+					height = 500;
 
 				var svg = d3.select(element[0])
 					.append("svg")
@@ -309,30 +255,10 @@
 				
 
 				scope.render = function(data) {
-
+					// delete previous
 					svg.selectAll('g.arc').remove();
 					svg.selectAll('path').remove();
 					svg.selectAll('text').remove();
-
-					svg.selectAll('path').data(pie(data)).remove();
-
-					// function arcTween(a) {
-					// 	var i = d3.interpolate(this._current, a);
-					// 	// console.log('yes');
-					// 	this._current = i(0);
-					// 	return function(t) {
-					// 		return arc(i(t));
-					// 	};
-					// }
-
-					// var tweenPie = function (b) {
-					// 	// console.log(b);
-			  //         b.innerRadius = 0;
-			  //         var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
-			  //         return function(t) {
-			  //           return arc(i(t));
-			  //         };
-			  //       };
 
 					var arcs = svg.selectAll("g.arc")
 						.data(pie(data))
@@ -343,7 +269,7 @@
 						.on('click', function(d) {
 							controller.setBrands(d.data[0]);
 						})
-						// .on("mouseover", toggleArc)
+						// expand
 						.on("mouseover", function(d) {
 							d.state = !d.state;
 						    var dest = d.state ? arcLarge : arc;
@@ -352,11 +278,13 @@
 						      .duration(500)
 						      .attr("d", dest)
 						      ;
-							// toggleArc();
+
+						    // update tooltip
 							d3.select('#tooltip')
 							.style({"visibility": "visible"})
 							.text(d.data[0]);
 						})
+						// revert to normal position
 						.on("mouseout", function(d) {
 							d.state = !d.state;
 						    var dest = d.state ? arcLarge : arc;
@@ -365,63 +293,20 @@
 						      .duration(500)
 						      .attr("d", dest)
 						      ;
-
-						     // d3.select('#tooltip').attr("visibility");
 						})
 						;
 
 					var color = d3.scale.category10();
-					// var arcOver = d3.layout.arc().outerRadius(r + 10);
 
 					arcs.append("path")
-						// .on("mouseover", function() {
-						// 	console.log('over');
-						// 	// d3.select(this).attr("fill", "red");
-						// 	d3.select(this).attr("d", arcOver);
-						// })
-
-						// .each(function(d) { this._current = d; })
 						.transition()
-						// .delay()
 						.duration(1000)
-						// .attrTween("d", arcTween)
-
 						.attr("fill", function(d, i) { return color(i); })
 						.attr("d", arc)
-						
-						
-						// .ease("bounce")
-						// .delay(function(d,i) { return i*500; })
-						// .delay(500)
-						
-
-						
 						;
-
-					// var getAngle = function (d) {
-					//     return (180 / Math.PI * (d.startAngle + d.endAngle) / 2 - 90);
-					// };
-
-					// arcs.append("text")
-					// 	.attr("transform", function(d) {
-					// 		// d.outerRadius = 320; // Set Outer Coordinate
-					//   //       d.innerRadius = 315; // Set Inner Coordinate
-					// 		return "translate(" + arc.centroid(d) + ")" + "rotate(" + getAngle(d) + ")";
-					// 	})
-					// 	// .attr("dy", 5)
-					// 	.attr({
-					// 		"text-anchor": "middle",
-					// 		"font-family": "Roboto-Slab",
-					// 		"fill": "white"
-					// 	})
-					// 	.text(function(d) {
-					// 		return d.data[0];
-					// 	});
 				};
 
 				scope.$watch('data', function(){
-					// console.log('new!');
-					// console.log(scope.data);
 		        	scope.render(scope.data);
 		        });
 			}
@@ -435,7 +320,6 @@
 			},
 			require: '^ngController',
 			link: function (scope, element, attrs, controller) {
-				// console.log(scope);
 
 				function sortFunction(a, b) {
 				    if (a[1] === b[1]) { return 0; }
@@ -444,30 +328,23 @@
 
 				var svg = d3.select(element[0])
 							.append("svg")
-							// .attr('class', 'chart')
 							.attr("height", 300)
 							.attr("width", "100%")
 							;
 
 				scope.render = function(data) {
-					// console.log('rendering');
-
 					svg.selectAll('rect').remove();
 					svg.selectAll('text').remove();
 
 					svg.selectAll('rect')
 						.data(data.sort(sortFunction).reverse())
-						// rect
 						.enter()
 						.append('rect')
-						.on('click', function(d) { clickCategory(d[0]); })
 						.attr("height", "35")
 						.attr("width", 0)
 						.attr("x", "30%")
 						.attr("y", function(d,i) {return i* (35+4);})
-						.style({
-							"fill": "#0B717F"
-						})
+						.style({ "fill": "#0B717F" })
 						.transition()
 						.duration(1200)
 						.delay(120)
@@ -476,7 +353,6 @@
 
 					svg.selectAll('text')
 						.data(data)
-						// text
 						.enter()
 						.append('text')
 						.text( function(d) { return d[0]; })
